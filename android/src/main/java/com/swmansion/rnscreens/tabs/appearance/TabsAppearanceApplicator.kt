@@ -3,7 +3,6 @@ package com.swmansion.rnscreens.tabs.appearance
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.drawable.StateListDrawable
 import android.util.TypedValue
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -179,17 +178,8 @@ internal class TabsAppearanceApplicator(
             menuItem.title = tabsScreen.tabTitle
         }
 
-        val targetIcon =
-            if (tabsScreen.selectedIcon != null && tabsScreen.icon != null) {
-                StateListDrawable().apply {
-                    addState(intArrayOf(android.R.attr.state_checked), tabsScreen.selectedIcon?.mutate())
-                    addState(intArrayOf(), tabsScreen.icon?.mutate())
-                }
-            } else {
-                tabsScreen.icon
-            }
-
-        if (menuItem.icon != targetIcon) {
+        val targetIcon = tabsScreen.menuItemIcon
+        if (menuItem.icon !== targetIcon) {
             menuItem.icon = targetIcon
         }
     }

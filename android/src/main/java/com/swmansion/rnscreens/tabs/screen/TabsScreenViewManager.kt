@@ -140,9 +140,11 @@ class TabsScreenViewManager :
         value: ReadableMap?,
     ) {
         val uri = value?.getString("uri")
+        if (uri == view.imageIconUri) return
+        view.imageIconUri = uri
         if (uri != null) {
             loadImage(view.context, uri) { drawable ->
-                if (drawable != null) {
+                if (drawable != null && uri == view.imageIconUri) {
                     view.icon = drawable
                 }
             }
@@ -154,9 +156,11 @@ class TabsScreenViewManager :
         value: ReadableMap?,
     ) {
         val uri = value?.getString("uri")
+        if (uri == view.selectedImageIconUri) return
+        view.selectedImageIconUri = uri
         if (uri != null) {
             loadImage(view.context, uri) { drawable ->
-                if (drawable != null) {
+                if (drawable != null && uri == view.selectedImageIconUri) {
                     view.selectedIcon = drawable
                 }
             }

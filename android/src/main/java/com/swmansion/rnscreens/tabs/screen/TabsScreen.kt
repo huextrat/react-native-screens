@@ -2,6 +2,7 @@ package com.swmansion.rnscreens.tabs.screen
 
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.StateListDrawable
 import android.os.Parcelable
 import android.util.SparseArray
 import android.view.ViewGroup
@@ -92,12 +93,43 @@ class TabsScreen(
         }
     }
 
+    // Last image uri requested for each icon, so that props re-sent with the same image
+    // do not trigger another load, and a load that is outrun by a newer one is dropped.
+    internal var imageIconUri: String? = null
+    internal var selectedImageIconUri: String? = null
+
     var icon: Drawable? by Delegates.observable(null) { _, oldValue, newValue ->
-        updateMenuItemAttributesIfNeeded(oldValue, newValue)
+        if (newValue != oldValue) {
+            menuItemIcon = resolveMenuItemIcon()
+        }
     }
 
     var selectedIcon: Drawable? by Delegates.observable(null) { _, oldValue, newValue ->
+        if (newValue != oldValue) {
+            menuItemIcon = resolveMenuItemIcon()
+        }
+    }
+
+    /**
+     * Drawable to set on the menu item. Built once per icon change: handing the menu item a new
+     * drawable resets its icon view, which shows as a blink when nothing actually changed.
+     */
+    internal var menuItemIcon: Drawable? by Delegates.observable(null) { _, oldValue, newValue ->
         updateMenuItemAttributesIfNeeded(oldValue, newValue)
+    }
+        private set
+
+    private fun resolveMenuItemIcon(): Drawable? {
+        val icon = icon
+        val selectedIcon = selectedIcon
+        return if (icon != null && selectedIcon != null) {
+            StateListDrawable().apply {
+                addState(intArrayOf(android.R.attr.state_checked), selectedIcon.mutate())
+                addState(intArrayOf(), icon.mutate())
+            }
+        } else {
+            icon
+        }
     }
 
     // endregion
